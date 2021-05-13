@@ -7,7 +7,9 @@ As of now it only provides basic functionality. I am making it public so as to g
 Building
 ---------
 
-As of now, only the VST version has been built successfully, on Linux and MacOS. Any feedback about building attempts is appreciated.
+As of now, Amati has been built on Linux and MacOS. The standalone version doesn't seem to play nice with JACK on Linux.
+
+Any feedback about building attempts is appreciated.
 
 ### Dependencies
 
