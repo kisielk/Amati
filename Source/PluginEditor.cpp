@@ -80,7 +80,7 @@ void AmatiAudioProcessorEditor::buttonClicked (juce::Button* button)
     juce::String id = button -> getComponentID ();
 
     if (id == "compile")
-    { 
+    {
         if (audioProcessor.compileSource (editorComponent.getSource ()))
         {
             updateParameters ();
@@ -94,7 +94,7 @@ void AmatiAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
     {
         if (paramEditor.compareWithSlider(slider, i))
         {
-            audioProcessor.setParameter (i, slider -> getValue() );
+            audioProcessor.setParameterValue (i, slider -> getValue() );
         }
     }
 }
@@ -141,4 +141,3 @@ void AmatiAudioProcessorEditor::updateEditor ()
 {
     editorComponent.setSource (audioProcessor.getSourceCode ());
 }
-

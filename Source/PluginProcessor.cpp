@@ -260,7 +260,7 @@ void AmatiAudioProcessor::setStateInformation (const void* data, int sizeInBytes
 
                 if (index != -1)
                 {
-                    setParameter (index, value);
+                    setParameterValue (index, value);
                 }
                 else
                     juce::Logger::getCurrentLogger() -> writeToLog ("Preset parameter missing index");
@@ -312,7 +312,7 @@ double AmatiAudioProcessor::getParameterValue (int index)
     return (controlParameters[index] -> get ());
 }
 
-void AmatiAudioProcessor::setParameter (int index, double value)
+void AmatiAudioProcessor::setParameterValue (int index, double value)
 {
     controlParameters[index] -> setValueNotifyingHost (value);
 }
@@ -334,8 +334,7 @@ void AmatiAudioProcessor::updateDspParameters ()
 
     for (int i = 0; i < count; ++i)
     {
-        double val = controlParameters[i] -> get(); 
+        double val = controlParameters[i] -> get();
         faustProgram.setValue (i, val);
     }
 }
-

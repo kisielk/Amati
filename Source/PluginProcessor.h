@@ -79,7 +79,7 @@ public:
     int getParamCount ();
     double getParameterValue (int);
 
-    void setParameter (int, double);
+    void setParameterValue (int, double);
     void beginGesture (int);
     void endGesture (int);
 
