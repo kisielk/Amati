@@ -102,16 +102,16 @@ int AmatiAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void AmatiAudioProcessor::setCurrentProgram (int index)
+void AmatiAudioProcessor::setCurrentProgram (int)
 {
 }
 
-const juce::String AmatiAudioProcessor::getProgramName (int index)
+const juce::String AmatiAudioProcessor::getProgramName (int)
 {
     return {};
 }
 
-void AmatiAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void AmatiAudioProcessor::changeProgramName (int, const juce::String&)
 {
 }
 
@@ -134,14 +134,14 @@ void AmatiAudioProcessor::releaseResources()
 {
 }
 
-bool AmatiAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool AmatiAudioProcessor::isBusesLayoutSupported (const BusesLayout&) const
 {
     // We want to accept any layout; the responsibility is on the user to write
     // a Faust program that is compatible with the layout
     return true;
 }
 
-void AmatiAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void AmatiAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
     updateDspParameters ();
 
