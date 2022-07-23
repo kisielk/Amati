@@ -24,7 +24,7 @@
 
 class FaustProgram::DspFactory {
 public:
-  DspFactory(dsp_factory* f, FaustProgram::Backend b) : dspFactory(f), backend(b) {}
+  DspFactory(FaustProgram::Backend b) : backend(b) {}
 
   ~DspFactory() {
     switch (backend) {
@@ -35,6 +35,33 @@ public:
       deleteInterpreterDSPFactory(static_cast<interpreter_dsp_factory*>(dspFactory));
       break;
     }
+  }
+    
+    dsp_factory* compileSource (juce::String source, std::string& errorString)
+    {
+        const char* argv[] = {""}; // compilation arguments
+        switch (backend) {
+            case FaustProgram::Backend::LLVM:
+                dspFactory = createDSPFactoryFromString (
+                     "faust",   // program name
+                     source.toStdString (),
+                     0,         // number of arguments
+                     argv,
+                     "",        // compilation target; left empty to say we want to compile for this machine
+                     errorString
+                );
+                break;
+            case FaustProgram::Backend::Interpreter:
+                dspFactory = createInterpreterDSPFactoryFromString (
+                    "faust",   // program name
+                    source.toStdString (),
+                    0,         // number of arguments
+                    argv,
+                    errorString
+                );
+                break;
+        }
+        return dspFactory;
   }
 
 private:
@@ -57,40 +84,18 @@ FaustProgram::~FaustProgram ()
 bool FaustProgram::compileSource (juce::String source)
 {
     juce::Logger::getCurrentLogger()->writeToLog ("Starting compilation...");
-
-    const char* argv[] = {""}; // compilation arguments
+   
     std::string errorString;
+    DspFactory* newFactory = new DspFactory(backend);
+    dsp_factory* factory = newFactory->compileSource(source, errorString);
     
-    dsp_factory* newFactory;
-    switch (backend) {
-    case Backend::LLVM:
-      newFactory = createDSPFactoryFromString (
-          "faust",   // program name
-          source.toStdString (),
-          0,         // number of arguments
-          argv,
-          "",        // compilation target; left empty to say we want to compile for this machine
-          errorString
-      );
-      break;
-    case Backend::Interpreter:
-      newFactory = createInterpreterDSPFactoryFromString (
-          "faust",   // program name
-          source.toStdString (),
-          0,         // number of arguments
-          argv,
-          errorString
-      );
-      break;
-    }
-
-    if (newFactory) // compilation successful!
+    if (factory) // compilation successful!
     {
-      dspInstance.reset(newFactory->createDSPInstance());
+      dspInstance.reset(factory->createDSPInstance());
       dspInstance->init (sampleRate);
       // Note: dspFactory is reset after dspInstance because the parent
       // factory needs to outlive it.
-      dspFactory.reset(new DspFactory(newFactory, backend));
+      dspFactory.reset(newFactory);
 
       faustInterface.reset(new APIUI);
       dspInstance->buildUserInterface (faustInterface.get());
@@ -116,7 +121,6 @@ size_t FaustProgram::getParamCount ()
         return 0;
 }
 
-
 int FaustProgram::getNumInChannels ()
 {
     if (dspInstance)
@@ -125,7 +129,6 @@ int FaustProgram::getNumInChannels ()
         return 0;
 }
 
-
 int FaustProgram::getNumOutChannels ()
 {
     if (dspInstance)
@@ -133,7 +136,6 @@ int FaustProgram::getNumOutChannels ()
     else
         return 0;
 }
-
 
 FaustProgram::ItemType FaustProgram::getType (size_t index)
 {
@@ -153,24 +155,20 @@ FaustProgram::ItemType FaustProgram::getType (size_t index)
     }
 }
 
-
 double FaustProgram::getMin (size_t index)
 {
     return (faustInterface->getParamMin (index));
 }
-
 
 double FaustProgram::getMax (size_t index)
 {
     return (faustInterface->getParamMax (index));
 }
 
-
 double FaustProgram::getInit (size_t index)
 {
     return (faustInterface->getParamInit (index));
 }
-
 
 float FaustProgram::getValue (size_t index)
 {
